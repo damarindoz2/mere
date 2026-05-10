@@ -1,13 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
 :root {
-  --bg: #fdf6f0;
-  --panel-bg: #ffffff;
-  --panel-border: rgba(212, 83, 126, 0.15);
+  --bg-page: #1a1224;
+  --panel-bg: rgba(255, 252, 248, 0.94);
+  --panel-border: rgba(212, 83, 126, 0.2);
   --text-main: #3d1a2b;
-  --text-muted: #b08090;
+  --text-muted: #8a5a6a;
   --pink-accent: #d4537e;
-  --pink-tint: rgba(212, 83, 126, 0.22);
   --dot-empty: #f0d0dc;
   --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-ui: 'DM Sans', system-ui, sans-serif;
@@ -28,7 +27,7 @@ body {
   min-height: 100dvh;
   font-family: var(--font-ui);
   color: var(--text-main);
-  background: var(--bg);
+  background: var(--bg-page);
 }
 
 #root {
