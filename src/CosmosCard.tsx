@@ -60,10 +60,22 @@ function petalFill(i: number, active: number | null, read: Set<number>): string 
   return C.petal
 }
 
-function StaticCosmos({ x, y, s }: { x: number; y: number; s: number }) {
+function StaticCosmos({
+  x,
+  y,
+  s,
+  bloomBase = 0,
+}: {
+  x: number
+  y: number
+  s: number
+  bloomBase?: number
+}) {
+  const b = bloomBase
   return (
     <g transform={`translate(${x} ${y}) scale(${s}) translate(-150 -150)`}>
       <line
+        className="garden__stem-draw"
         x1="150"
         y1="176"
         x2="150"
@@ -71,26 +83,44 @@ function StaticCosmos({ x, y, s }: { x: number; y: number; s: number }) {
         stroke={C.stem}
         strokeWidth="2.5"
         strokeLinecap="round"
+        pathLength={100}
+        strokeDasharray={100}
+        strokeDashoffset={100}
+        style={{ animationDelay: `${b}s` }}
       />
       <path
+        className="garden__leaf-pop"
         d="M150,248 C136,238 118,240 115,252 C124,260 142,258 150,248Z"
         fill={C.leaf}
+        style={{ animationDelay: `${b + 0.18}s` }}
       />
       <path
+        className="garden__leaf-pop"
         d="M150,222 C164,212 182,214 185,226 C176,234 158,232 150,222Z"
         fill={C.leaf}
+        style={{ animationDelay: `${b + 0.26}s` }}
       />
       {Array.from({ length: 8 }, (_, i) => (
         <g key={i} transform={`rotate(${i * 45} 150 150)`}>
-          <path d={PETAL_MAIN} fill={C.petal} />
-          <path d={PETAL_STRIPE} fill={C.stripe} />
+          <g
+            className="garden__petal-bloom"
+            style={{ animationDelay: `${b + 0.32 + i * 0.055}s` }}
+          >
+            <path d={PETAL_MAIN} fill={C.petal} />
+            <path d={PETAL_STRIPE} fill={C.stripe} />
+          </g>
         </g>
       ))}
-      <circle cx="150" cy="150" r="26" fill={C.center} />
-      {POLLEN_DOTS.map((d, i) => (
-        <circle key={i} cx={d.cx} cy={d.cy} r="2.2" fill={C.nucleus} />
-      ))}
-      <circle cx="150" cy="150" r="6" fill={C.nucleus} />
+      <g
+        className="garden__center-pop"
+        style={{ animationDelay: `${b + 0.78}s` }}
+      >
+        <circle cx="150" cy="150" r="26" fill={C.center} />
+        {POLLEN_DOTS.map((d, i) => (
+          <circle key={i} cx={d.cx} cy={d.cy} r="2.2" fill={C.nucleus} />
+        ))}
+        <circle cx="150" cy="150" r="6" fill={C.nucleus} />
+      </g>
     </g>
   )
 }
@@ -99,17 +129,55 @@ function StaticCosmos({ x, y, s }: { x: number; y: number; s: number }) {
 const HERO_GROUP_TX = 20
 const HERO_GROUP_TY = STEM_GROUND_Y - 340
 
+const BF_WING_U = '#cc6633'
+const BF_WING_L = '#e07848'
+
 function Butterfly({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      viewBox="-18 -10 36 20"
+      viewBox="-22 -16 44 32"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <ellipse cx="-8" cy="0" rx="10" ry="7.5" fill={C.butterfly} />
-      <ellipse cx="8" cy="0" rx="10" ry="7.5" fill={C.butterfly} />
-      <circle cx="0" cy="0" r="2.2" fill={C.butterflyBody} />
+      <g className="garden__bf-side garden__bf-side--left">
+        <ellipse
+          cx="-10"
+          cy="-5"
+          rx="11"
+          ry="8.5"
+          fill={BF_WING_U}
+          transform="rotate(-22 -10 -5)"
+        />
+        <ellipse
+          cx="-8"
+          cy="7"
+          rx="7.5"
+          ry="6"
+          fill={BF_WING_L}
+          transform="rotate(-12 -8 7)"
+        />
+      </g>
+      <g className="garden__bf-side garden__bf-side--right">
+        <ellipse
+          cx="10"
+          cy="-5"
+          rx="11"
+          ry="8.5"
+          fill={BF_WING_U}
+          transform="rotate(22 10 -5)"
+        />
+        <ellipse
+          cx="8"
+          cy="7"
+          rx="7.5"
+          ry="6"
+          fill={BF_WING_L}
+          transform="rotate(12 8 7)"
+        />
+      </g>
+      <ellipse cx="0" cy="0" rx="2" ry="9" fill={C.butterflyBody} />
+      <circle cx="0" cy="-7" r="1.4" fill="#5a4030" />
     </svg>
   )
 }
@@ -169,10 +237,20 @@ function CosmosCard() {
             fill={C.hill}
           />
 
-          <StaticCosmos x={68} y={stemAnchorY(0.34)} s={0.34} />
-          <StaticCosmos x={50} y={stemAnchorY(0.4) - 4} s={0.4} />
-          <StaticCosmos x={270} y={stemAnchorY(0.36)} s={0.36} />
-          <StaticCosmos x={285} y={stemAnchorY(0.38) - 3} s={0.38} />
+          <StaticCosmos x={68} y={stemAnchorY(0.34)} s={0.34} bloomBase={0} />
+          <StaticCosmos
+            x={50}
+            y={stemAnchorY(0.4) - 4}
+            s={0.4}
+            bloomBase={0.12}
+          />
+          <StaticCosmos x={270} y={stemAnchorY(0.36)} s={0.36} bloomBase={0.06} />
+          <StaticCosmos
+            x={285}
+            y={stemAnchorY(0.38) - 3}
+            s={0.38}
+            bloomBase={0.18}
+          />
 
           <g
             transform={`translate(${HERO_GROUP_TX} ${HERO_GROUP_TY})`}
@@ -180,6 +258,7 @@ function CosmosCard() {
             aria-label="Flor cosmos: toca un pétalo para leer un mensaje"
           >
             <line
+              className="garden__stem-draw"
               x1="150"
               y1="176"
               x2="150"
@@ -187,14 +266,22 @@ function CosmosCard() {
               stroke={C.stem}
               strokeWidth="2.5"
               strokeLinecap="round"
+              pathLength={100}
+              strokeDasharray={100}
+              strokeDashoffset={100}
+              style={{ animationDelay: '0.28s' }}
             />
             <path
+              className="garden__leaf-pop"
               d="M150,288 C132,272 108,276 104,290 C114,300 138,296 150,288Z"
               fill={C.leaf}
+              style={{ animationDelay: '0.52s' }}
             />
             <path
+              className="garden__leaf-pop"
               d="M150,252 C168,236 192,240 196,254 C186,264 162,260 150,252Z"
               fill={C.leaf}
+              style={{ animationDelay: '0.6s' }}
             />
             {Array.from({ length: 8 }, (_, i) => (
               <g
@@ -207,23 +294,33 @@ function CosmosCard() {
                 onClick={() => handlePetal(i)}
                 onKeyDown={(e) => onPetalKeyDown(e, i)}
               >
-                <path
-                  d={PETAL_MAIN}
-                  fill={petalFill(i, active, read)}
-                  style={{ transition: 'fill 0.2s ease' }}
-                />
-                <path
-                  d={PETAL_STRIPE}
-                  fill={C.stripe}
-                  style={{ pointerEvents: 'none' }}
-                />
+                <g
+                  className="garden__petal-bloom"
+                  style={{ animationDelay: `${0.68 + i * 0.06}s` }}
+                >
+                  <path
+                    d={PETAL_MAIN}
+                    fill={petalFill(i, active, read)}
+                    style={{ transition: 'fill 0.2s ease' }}
+                  />
+                  <path
+                    d={PETAL_STRIPE}
+                    fill={C.stripe}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                </g>
               </g>
             ))}
-            <circle cx="150" cy="150" r="26" fill={C.center} />
-            {POLLEN_DOTS.map((d, i) => (
-              <circle key={i} cx={d.cx} cy={d.cy} r="2.2" fill={C.nucleus} />
-            ))}
-            <circle cx="150" cy="150" r="6" fill={C.nucleus} />
+            <g
+              className="garden__center-pop"
+              style={{ animationDelay: '1.18s' }}
+            >
+              <circle cx="150" cy="150" r="26" fill={C.center} />
+              {POLLEN_DOTS.map((d, i) => (
+                <circle key={i} cx={d.cx} cy={d.cy} r="2.2" fill={C.nucleus} />
+              ))}
+              <circle cx="150" cy="150" r="6" fill={C.nucleus} />
+            </g>
           </g>
         </svg>
 
