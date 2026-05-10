@@ -2,9 +2,9 @@ import { useState } from 'react'
 import './CosmosCard.css'
 
 const MENSAJES = [
-  'Gracias por estar siempre, en los días buenos y en los difíciles.',
+  'Gracias por ',
   'Tu abrazo es el lugar más seguro que conozco.',
-  'Me enseñaste que el amor no se dice, se demuestra — y tú lo demuestras cada día.',
+  'Me enseñaste que el amor no se dice, se demuestra.',
   'Eres la razón por la que creo en la bondad de las personas.',
   'Cada logro mío lleva tu nombre, aunque no aparezca en ningún lado.',
   'Nadie ríe como tú. Ese sonido es mi canción favorita.',
@@ -14,168 +14,137 @@ const MENSAJES = [
 
 const MENSAJE_FINAL = 'Feliz Día de las Madres. Gracias por existir.'
 
-/** Pétalo apuntando hacia arriba; base en el borde del disco (cx=150, cy=170, r=28). */
-const PETAL_D =
-  'M 150,142 C 126,116 118,82 147,95 Q 150,87 153,95 C 182,82 174,116 150,142 Z'
+/** PNG cosmos CC0 (Rawpixel); si falla la carga se prueba la siguiente URL. */
+const FLOWER_IMAGE_URLS = [
+  'https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/pd20-ning-nholiday23-5402-flower.png?w=800&dpr=1&fit=default&crop=default&auto=format&fm=png&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=cf389e3b6e94e39e87fac08c5571b38e',
+  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=640&auto=format&fit=crop&q=80',
+] as const
 
-const CX = 150
-const CY = 170
+const BASE_PETAL =
+  'M 160,135 C 145,115 140,85 160,72 C 180,85 175,115 160,135 Z'
+
+const CX = 160
+const CY = 160
+
+const petals = Array.from({ length: 8 }, (_, i) => ({
+  path: BASE_PETAL,
+  transform: `rotate(${i * 45} ${CX} ${CY})`,
+}))
 
 function CosmosCard() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [readPetals, setReadPetals] = useState<Set<number>>(() => new Set())
-  const allRead = readPetals.size === 8
+  const [imgUrlIndex, setImgUrlIndex] = useState(0)
 
-  const handlePetal = (index: number) => {
-    setActiveIndex(index)
-    setReadPetals((prev) => new Set(prev).add(index))
+  const allRead = readPetals.size === 8
+  const imgSrc = FLOWER_IMAGE_URLS[Math.min(imgUrlIndex, FLOWER_IMAGE_URLS.length - 1)]
+
+  function handlePetalClick(i: number) {
+    setActiveIndex(i)
+    setReadPetals((prev) => new Set([...prev, i]))
   }
 
   const onPetalKeyDown = (
-    e: React.KeyboardEvent<SVGGElement>,
-    index: number,
+    e: React.KeyboardEvent<SVGPathElement>,
+    i: number,
   ) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      handlePetal(index)
+      handlePetalClick(i)
     }
   }
 
-  const dotAngles = [0, 45, 90, 135, 180, 225, 270, 315].map((d) => {
-    const r = 14
-    const rad = ((d - 90) * Math.PI) / 180
-    return { cx: CX + r * Math.cos(rad), cy: CY + r * Math.sin(rad) }
-  })
+  const onDotKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, i: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handlePetalClick(i)
+    }
+  }
 
-  const readDotPosition = (index: number) => {
-    const rad = ((-90 + index * 45) * Math.PI) / 180
-    const rr = 26.2
-    return { cx: CX + rr * Math.cos(rad), cy: CY + rr * Math.sin(rad) }
+  const onImageError = () => {
+    setImgUrlIndex((idx) =>
+      idx < FLOWER_IMAGE_URLS.length - 1 ? idx + 1 : idx,
+    )
   }
 
   return (
     <div className="cosmos-card">
-      <svg
-        className="cosmos-card__svg"
-        viewBox="0 0 300 420"
-        width="100%"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-label="Flor cosmos interactiva. Toca un pétalo para leer un mensaje."
-      >
-        <path
-          className="cosmos-stem"
-          d="M 150 198 L 150 380"
-          aria-hidden
+      <div className="cosmos-card__flower-zone">
+        <img
+          className="cosmos-card__photo"
+          src={imgSrc}
+          alt="Flor cosmos rosa"
+          width={320}
+          height={320}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          onError={onImageError}
         />
-        <path
-          className="cosmos-leaf"
-          d="M 150 268 Q 88 248 72 298 Q 118 278 148 272 Z"
-          aria-hidden
-        />
-        <path
-          className="cosmos-leaf"
-          d="M 150 288 Q 212 268 228 318 Q 182 298 152 292 Z"
-          aria-hidden
-        />
-
-        {Array.from({ length: 8 }, (_, i) => (
-          <g key={i} transform={`rotate(${i * 45} ${CX} ${CY})`}>
-            <g
+        <svg
+          className="cosmos-card__overlay"
+          viewBox="0 0 320 320"
+          width="100%"
+          height="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          role="group"
+          aria-label="Zona interactiva: ocho pétalos para descubrir mensajes"
+        >
+          {petals.map((petal, i) => (
+            <path
+              key={i}
+              d={petal.path}
+              transform={petal.transform}
+              fill={
+                activeIndex === i ? 'rgba(212,83,126,0.25)' : 'transparent'
+              }
+              stroke={
+                readPetals.has(i) ? 'rgba(212,83,126,0.6)' : 'transparent'
+              }
+              strokeWidth={1.5}
+              className="cosmos-card__petal-hit"
               role="button"
               tabIndex={0}
               aria-label={`Pétalo ${i + 1} de 8`}
-              onClick={() => handlePetal(i)}
+              onClick={() => handlePetalClick(i)}
               onKeyDown={(e) => onPetalKeyDown(e, i)}
-            >
-              <path
-                className="petal-hit"
-                d={PETAL_D}
-                transform={`translate(${CX} ${CY}) scale(1.32) translate(${-CX} ${-CY})`}
-              />
-              <g
-                className={`petal-group${readPetals.has(i) ? ' petal-group--read' : ''}${activeIndex === i ? ' petal-group--active' : ''}`}
-                transform={
-                  activeIndex === i
-                    ? 'translate(150 142) scale(1.06) translate(-150 -142)'
-                    : undefined
-                }
-              >
-                <path className="petal-visible" d={PETAL_D} />
-              </g>
-            </g>
-          </g>
-        ))}
-
-        <g className={allRead ? 'cosmos-center cosmos-center--pulse' : 'cosmos-center'}>
-          <circle className="cosmos-center-disk" cx={CX} cy={CY} r="28" />
-          {dotAngles.map((p, i) => (
-            <circle
-              key={i}
-              className="cosmos-center-dot"
-              cx={p.cx}
-              cy={p.cy}
-              r="2.8"
-              aria-hidden
             />
           ))}
-          <path
-            className="cosmos-heart"
-            d="M150,176 C148,174 142,169 142,163 C142,158 145,155 150,158 C155,155 158,158 158,163 C158,169 152,174 150,176 Z"
-            aria-hidden
-          />
-        </g>
+        </svg>
+      </div>
 
-        {Array.from(readPetals).map((i) => {
-          const p = readDotPosition(i)
-          return (
-            <circle
-              key={`read-${i}`}
-              className="petal-read-dot"
-              cx={p.cx}
-              cy={p.cy}
-              r="2.6"
-              aria-hidden
-            />
-          )
-        })}
-      </svg>
-
-      <div className="message-panel" aria-live="polite">
-        <div className="message-panel__inner">
-          {allRead ? (
-            <p
-              className={`final-banner${allRead ? ' final-banner--visible' : ''}`}
-            >
-              {MENSAJE_FINAL}
-            </p>
-          ) : null}
-
-          {activeIndex !== null ? (
-            <>
-              <span className="petal-counter">
-                {activeIndex + 1} / 8
-              </span>
-              <p className="message-text message-text--visible">
-                {MENSAJES[activeIndex]}
-              </p>
-            </>
-          ) : !allRead ? (
-            <p className="hint-text">Toca un pétalo…</p>
+      <div
+        className={`message-panel${allRead ? ' message-panel--final-bg' : ''}`}
+        aria-live="polite"
+      >
+        {activeIndex === null ? (
+          allRead ? (
+            <p className="message message--final">{MENSAJE_FINAL}</p>
           ) : (
-            <p className="hint-text">
-              Toca un pétalo para volver a leer un mensaje.
+            <p className="hint">Toca un pétalo para leer un mensaje</p>
+          )
+        ) : (
+          <>
+            <span className="counter">{activeIndex + 1} / 8</span>
+            <p className="message" key={activeIndex}>
+              {MENSAJES[activeIndex]}
             </p>
-          )}
-        </div>
+          </>
+        )}
+      </div>
 
-        <div className="progress-dots" aria-hidden>
-          {Array.from({ length: 8 }, (_, i) => (
-            <span
-              key={i}
-              className={`progress-dot${readPetals.has(i) ? ' progress-dot--filled' : ''}`}
-            />
-          ))}
-        </div>
+      <div className="progress-row" role="group" aria-label="Progreso por pétalo">
+        {Array.from({ length: 8 }, (_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`dot${readPetals.has(i) ? ' dot--filled' : ''}`}
+            aria-label={`Abrir pétalo ${i + 1}`}
+            aria-pressed={readPetals.has(i)}
+            onClick={() => handlePetalClick(i)}
+            onKeyDown={(e) => onDotKeyDown(e, i)}
+          />
+        ))}
       </div>
     </div>
   )
