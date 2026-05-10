@@ -14,57 +14,76 @@ const MENSAJES = [
 
 const MENSAJE_FINAL = 'Feliz Día de las Madres. Gracias por existir.'
 
-const PETAL_OUTER =
-  'M 150,148 C 133,125 128,93 150,68 C 172,93 167,125 150,148 Z'
-const PETAL_VEIN =
-  'M 150,148 C 145,128 143,100 150,78 C 157,100 155,128 150,148 Z'
+/** Paleta estilo ilustración plana (referencia). */
+const C = {
+  petal: '#c46ba1',
+  petalRead: '#b56598',
+  petalActive: '#923a6a',
+  stripe: '#a14d7d',
+  center: '#d9b64d',
+  nucleus: '#7a4a28',
+  stem: '#3a5a2a',
+  leaf: '#3a5a2a',
+  skyTop: '#3b2b4d',
+  skyBottom: '#c14a27',
+  cloud: '#2d2238',
+  hill: '#3a5a2a',
+  butterfly: '#cc6633',
+  butterflyBody: '#4a3020',
+} as const
 
-const PISTIL_DOTS: { cx: number; cy: number; r: number }[] = [
-  { cx: 142, cy: 143, r: 3 },
-  { cx: 152, cy: 140, r: 2.8 },
-  { cx: 160, cy: 146, r: 3.1 },
-  { cx: 158, cy: 156, r: 2.9 },
-  { cx: 149, cy: 159, r: 3.2 },
-  { cx: 141, cy: 154, r: 2.8 },
-]
+/** Pétalo tipo gota / cosmos, apuntando arriba; base en borde del centro. */
+const PETAL_MAIN =
+  'M 150,148 C 129,115 126,72 150,54 C 174,72 171,115 150,148 Z'
+/** Franja vertical más oscura al centro del pétalo. */
+const PETAL_STRIPE =
+  'M 150,148 C 148,118 147,82 150,56 C 153,82 152,118 150,148 Z'
 
-const DECOR_PETAL =
-  'M 0,6 C -3.2,1.5 -3.8,-5 0,-12.5 C 3.8,-5 3.2,1.5 0,6 Z'
+const POLLEN_DOTS = [0, 1, 2, 3, 4].map((i) => {
+  const rad = ((-90 + i * 72) * Math.PI) / 180
+  return {
+    cx: 150 + 10.5 * Math.cos(rad),
+    cy: 150 + 10.5 * Math.sin(rad),
+  }
+})
 
 function petalFill(i: number, active: number | null, read: Set<number>): string {
-  if (i === active) return '#B8336A'
-  if (read.has(i)) return '#D4699F'
-  return '#E87DB5'
+  if (i === active) return C.petalActive
+  if (read.has(i)) return C.petalRead
+  return C.petal
 }
 
-function DecorBloom({
-  x,
-  y,
-  s,
-  rot = 0,
-  petalFill: pf = '#e598c4',
-  centerFill = '#f2c14e',
-}: {
-  x: number
-  y: number
-  s: number
-  rot?: number
-  petalFill?: string
-  centerFill?: string
-}) {
-  const angles = [0, 72, 144, 216, 288]
+function StaticCosmos({ x, y, s }: { x: number; y: number; s: number }) {
   return (
-    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
-      {angles.map((a, i) => (
-        <path
-          key={i}
-          d={DECOR_PETAL}
-          fill={pf}
-          opacity={0.88}
-          transform={`rotate(${a})`}
-        />
+    <g transform={`translate(${x} ${y}) scale(${s}) translate(-150 -150)`}>
+      <line
+        x1="150"
+        y1="176"
+        x2="150"
+        y2="268"
+        stroke={C.stem}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M150,248 C136,238 118,240 115,252 C124,260 142,258 150,248Z"
+        fill={C.leaf}
+      />
+      <path
+        d="M150,222 C164,212 182,214 185,226 C176,234 158,232 150,222Z"
+        fill={C.leaf}
+      />
+      {Array.from({ length: 8 }, (_, i) => (
+        <g key={i} transform={`rotate(${i * 45} 150 150)`}>
+          <path d={PETAL_MAIN} fill={C.petal} />
+          <path d={PETAL_STRIPE} fill={C.stripe} />
+        </g>
       ))}
-      <circle r={3.4} fill={centerFill} opacity={0.95} />
+      <circle cx="150" cy="150" r="26" fill={C.center} />
+      {POLLEN_DOTS.map((d, i) => (
+        <circle key={i} cx={d.cx} cy={d.cy} r="2.2" fill={C.nucleus} />
+      ))}
+      <circle cx="150" cy="150" r="6" fill={C.nucleus} />
     </g>
   )
 }
@@ -73,33 +92,13 @@ function Butterfly({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      viewBox="-22 -14 44 28"
+      viewBox="-18 -10 36 20"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <path
-        d="M0,1.5 C-10,-10 -20,-4 -18,6 C-14,12 -4,10 0,4 Z"
-        fill="#3d2a55"
-        opacity={0.92}
-      />
-      <path
-        d="M0,1.5 C10,-10 20,-4 18,6 C14,12 4,10 0,4 Z"
-        fill="#3d2a55"
-        opacity={0.92}
-      />
-      <path
-        d="M0,1.5 C-7,-6 -14,-2 -12,5 C-8,8 -2,6 0,3 Z"
-        fill="#7b5ea7"
-        opacity={0.85}
-      />
-      <path
-        d="M0,1.5 C7,-6 14,-2 12,5 C8,8 2,6 0,3 Z"
-        fill="#7b5ea7"
-        opacity={0.85}
-      />
-      <circle cx="-5" cy="-2" r="1.6" fill="#f8e8ff" opacity={0.7} />
-      <circle cx="5" cy="-2" r="1.6" fill="#f8e8ff" opacity={0.7} />
-      <ellipse cx="0" cy="5" rx="1.2" ry="5" fill="#2a1f38" opacity={0.85} />
+      <ellipse cx="-8" cy="0" rx="10" ry="7.5" fill={C.butterfly} />
+      <ellipse cx="8" cy="0" rx="10" ry="7.5" fill={C.butterfly} />
+      <circle cx="0" cy="0" r="2.2" fill={C.butterflyBody} />
     </svg>
   )
 }
@@ -130,9 +129,6 @@ function CosmosCard() {
 
   return (
     <div className="garden">
-      <div className="garden__sun" aria-hidden />
-      <div className="garden__horizon" aria-hidden />
-
       <svg
         className="garden__backdrop"
         viewBox="0 0 340 640"
@@ -140,24 +136,30 @@ function CosmosCard() {
         aria-hidden
       >
         <defs>
-          <linearGradient id="gardenGrass" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3d5c2e" stopOpacity={0.35} />
-            <stop offset="100%" stopColor="#1e2d18" stopOpacity={0.55} />
+          <linearGradient id="gardenSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={C.skyTop} />
+            <stop offset="100%" stopColor={C.skyBottom} />
           </linearGradient>
         </defs>
+        <rect width="340" height="640" fill="url(#gardenSky)" />
         <path
-          d="M0,520 Q85,500 170,515 T340,520 L340,640 L0,640 Z"
-          fill="url(#gardenGrass)"
+          d="M0,72 H340 V88 H280 L260,78 H200 L170,85 H120 L90,76 H40 L0,82 Z"
+          fill={C.cloud}
+          opacity={0.55}
         />
-        <DecorBloom x={48} y={118} s={1.15} rot={-8} petalFill="#d88fb8" />
-        <DecorBloom x={288} y={132} s={0.95} rot={12} petalFill="#e8a0c8" />
-        <DecorBloom x={72} y={210} s={0.72} rot={22} petalFill="#c97bab" />
-        <DecorBloom x={278} y={228} s={0.68} rot={-18} petalFill="#dea0c4" />
-        <DecorBloom x={38} y={300} s={0.55} rot={6} petalFill="#b87aa0" />
-        <DecorBloom x={302} y={318} s={0.52} rot={-14} petalFill="#c889b0" />
-        <DecorBloom x={118} y={92} s={0.42} rot={35} petalFill="#e7b8d4" />
-        <DecorBloom x={232} y={88} s={0.4} rot={-25} petalFill="#dcb0cf" />
-        <DecorBloom x={165} y={72} s={0.38} rot={8} petalFill="#f0c4df" />
+        <path
+          d="M-10,108 H350 V122 H300 L280,112 H220 L190,118 H130 L100,110 H30 L-10,116 Z"
+          fill={C.cloud}
+          opacity={0.4}
+        />
+        <path
+          d="M0,520 Q62,498 130,512 T260,505 Q300,498 340,518 V640 H0 Z"
+          fill={C.hill}
+        />
+        <StaticCosmos x={72} y={228} s={0.34} />
+        <StaticCosmos x={58} y={348} s={0.4} />
+        <StaticCosmos x={268} y={238} s={0.36} />
+        <StaticCosmos x={282} y={358} s={0.38} />
       </svg>
 
       <Butterfly className="garden__butterfly garden__butterfly--1" />
@@ -177,17 +179,17 @@ function CosmosCard() {
             y1="176"
             x2="150"
             y2="340"
-            stroke="#5A7A2E"
-            strokeWidth="3.5"
+            stroke={C.stem}
+            strokeWidth="2.5"
             strokeLinecap="round"
           />
           <path
-            d="M150,270 C130,255 108,258 105,270 C115,278 138,278 150,270Z"
-            fill="#7AAF3A"
+            d="M150,288 C132,272 108,276 104,290 C114,300 138,296 150,288Z"
+            fill={C.leaf}
           />
           <path
-            d="M150,240 C170,225 192,228 195,240 C185,248 162,248 150,240Z"
-            fill="#7AAF3A"
+            d="M150,252 C168,236 192,240 196,254 C186,264 162,260 150,252Z"
+            fill={C.leaf}
           />
 
           {Array.from({ length: 8 }, (_, i) => (
@@ -202,39 +204,23 @@ function CosmosCard() {
               onKeyDown={(e) => onPetalKeyDown(e, i)}
             >
               <path
-                d={PETAL_OUTER}
+                d={PETAL_MAIN}
                 fill={petalFill(i, active, read)}
-                stroke="#C45C89"
-                strokeWidth={0.8}
                 style={{ transition: 'fill 0.2s ease' }}
               />
               <path
-                d={PETAL_VEIN}
-                fill="#F4BCE1"
-                opacity={0.45}
+                d={PETAL_STRIPE}
+                fill={C.stripe}
                 style={{ pointerEvents: 'none' }}
               />
             </g>
           ))}
 
-          <circle
-            cx="150"
-            cy="150"
-            r="26"
-            fill="#F7C84A"
-            stroke="#E8A820"
-            strokeWidth={1}
-          />
-          {PISTIL_DOTS.map((d, i) => (
-            <circle
-              key={i}
-              cx={d.cx}
-              cy={d.cy}
-              r={d.r}
-              fill="#E8A820"
-            />
+          <circle cx="150" cy="150" r="26" fill={C.center} />
+          {POLLEN_DOTS.map((d, i) => (
+            <circle key={i} cx={d.cx} cy={d.cy} r="2.2" fill={C.nucleus} />
           ))}
-          <circle cx="150" cy="150" r="6" fill="#C47010" />
+          <circle cx="150" cy="150" r="6" fill={C.nucleus} />
         </svg>
       </div>
 

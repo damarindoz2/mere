@@ -5,57 +5,10 @@
   margin: 0 auto;
   padding: 20px 18px 28px;
   min-height: min(92dvh, 720px);
-  border-radius: 28px;
+  border-radius: 24px;
   overflow: hidden;
-  background: linear-gradient(
-    175deg,
-    #2a1f45 0%,
-    #4a2f62 14%,
-    #8b4878 32%,
-    #c96a7a 52%,
-    #e8956e 72%,
-    #f0b078 86%,
-    #6b4a28 100%
-  );
-  box-shadow:
-    0 24px 48px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-.garden__sun {
-  position: absolute;
-  left: 50%;
-  bottom: 26%;
-  width: 72px;
-  height: 72px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 45% 40%,
-    #fff0d4 0%,
-    #ffcc7a 42%,
-    #ff8f4a 68%,
-    rgba(255, 120, 60, 0.2) 100%
-  );
-  box-shadow: 0 0 48px rgba(255, 200, 120, 0.55);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.garden__horizon {
-  position: absolute;
-  left: -15%;
-  right: -15%;
-  bottom: 14%;
-  height: 38%;
-  background: radial-gradient(
-    ellipse 75% 55% at 50% 100%,
-    rgba(255, 214, 160, 0.42) 0%,
-    rgba(232, 140, 120, 0.18) 45%,
-    transparent 72%
-  );
-  pointer-events: none;
-  z-index: 0;
+  background: #3b2b4d;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
 }
 
 .garden__backdrop {
@@ -65,47 +18,44 @@
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.92;
 }
 
 .garden__butterfly {
   position: absolute;
-  width: 44px;
-  height: 32px;
+  width: 40px;
+  height: 24px;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.9;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+  opacity: 1;
 }
 
 .garden__butterfly--1 {
-  top: 10%;
-  left: 6%;
+  top: 9%;
+  left: 10%;
   animation: gardenFlutter1 10s ease-in-out infinite;
 }
 
 .garden__butterfly--2 {
-  top: 22%;
-  right: 8%;
+  top: 16%;
+  right: 12%;
   animation: gardenFlutter2 12s ease-in-out infinite;
-  transform: scaleX(-1);
 }
 
 .garden__butterfly--3 {
-  bottom: 38%;
-  left: 12%;
-  width: 36px;
-  height: 26px;
-  animation: gardenFlutter3 11s ease-in-out infinite 0.5s;
+  top: 28%;
+  left: 22%;
+  width: 34px;
+  height: 20px;
+  animation: gardenFlutter3 11s ease-in-out infinite 0.4s;
 }
 
 @keyframes gardenFlutter1 {
   0%,
   100% {
-    transform: translate(0, 0) rotate(-6deg);
+    transform: translate(0, 0) rotate(-5deg);
   }
   50% {
-    transform: translate(18px, -14px) rotate(10deg);
+    transform: translate(14px, -12px) rotate(8deg);
   }
 }
 
@@ -115,17 +65,17 @@
     transform: scaleX(-1) translate(0, 0) rotate(0deg);
   }
   45% {
-    transform: scaleX(-1) translate(-16px, 12px) rotate(-8deg);
+    transform: scaleX(-1) translate(-12px, 10px) rotate(-6deg);
   }
 }
 
 @keyframes gardenFlutter3 {
   0%,
   100% {
-    transform: translate(0, 0) rotate(4deg);
+    transform: translate(0, 0) rotate(3deg);
   }
   50% {
-    transform: translate(22px, -18px) rotate(-12deg);
+    transform: translate(18px, -14px) rotate(-10deg);
   }
 }
 
@@ -134,8 +84,7 @@
   z-index: 1;
   display: flex;
   justify-content: center;
-  padding-top: 8px;
-  filter: drop-shadow(0 12px 20px rgba(40, 20, 40, 0.25));
+  padding-top: 6px;
 }
 
 .garden__flower-svg {
@@ -152,13 +101,14 @@
 }
 
 .garden__flower-svg g[role='button']:focus-visible path:first-of-type {
-  filter: drop-shadow(0 0 3px #fff8e0);
+  stroke: #fff8e8;
+  stroke-width: 1.2;
 }
 
 .garden__ui {
   position: relative;
   z-index: 2;
-  margin-top: 8px;
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -175,7 +125,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-shadow: 0 8px 24px rgba(30, 15, 35, 0.2);
+  box-shadow: 0 4px 16px rgba(30, 15, 35, 0.12);
 }
 
 .hint {
@@ -215,10 +165,8 @@
   font-weight: 600;
   font-style: italic;
   color: #fffdf8;
-  background: rgba(60, 30, 55, 0.45);
-  border: 1px solid rgba(255, 230, 240, 0.25);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(45, 34, 56, 0.55);
+  border: 1px solid rgba(255, 230, 240, 0.2);
 }
 
 @keyframes fadeUp {
@@ -261,7 +209,7 @@
 }
 
 .dot:focus-visible {
-  outline: 2px solid #f5e6ff;
+  outline: 2px solid #d9b64d;
   outline-offset: 2px;
 }
 
