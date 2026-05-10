@@ -237,18 +237,29 @@ function CosmosCard() {
             fill={C.hill}
           />
 
-          <StaticCosmos x={68} y={stemAnchorY(0.34)} s={0.34} bloomBase={0} />
+          {/* Laterales más separadas (X/Y) y algo más pequeñas para que no se tapen */}
           <StaticCosmos
-            x={50}
-            y={stemAnchorY(0.4) - 4}
-            s={0.4}
+            x={34}
+            y={stemAnchorY(0.27) + 4}
+            s={0.27}
+            bloomBase={0}
+          />
+          <StaticCosmos
+            x={100}
+            y={stemAnchorY(0.33) - 5}
+            s={0.33}
             bloomBase={0.12}
           />
-          <StaticCosmos x={270} y={stemAnchorY(0.36)} s={0.36} bloomBase={0.06} />
           <StaticCosmos
-            x={285}
-            y={stemAnchorY(0.38) - 3}
-            s={0.38}
+            x={312}
+            y={stemAnchorY(0.26) + 3}
+            s={0.26}
+            bloomBase={0.06}
+          />
+          <StaticCosmos
+            x={258}
+            y={stemAnchorY(0.32) - 6}
+            s={0.32}
             bloomBase={0.18}
           />
 
